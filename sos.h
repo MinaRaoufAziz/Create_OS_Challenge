@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #define MAX_TASKS 	5
 
-typedef enum {OVF_TASKS_BUFFER_OS = -9, NULLPTR_OS, OK_OS = 1}OS_Tasks_Status_t;
+typedef enum {OVF_TASKS_BUFFER_OS = -9, NULLPTR_OS, INCORRECT_TIMER, INVALID_PRESCALAR,INVALID_ARG ,DONE = 1}OS_Tasks_Status_t;
 
 typedef struct
 {
@@ -33,10 +33,10 @@ typedef struct
 
 OS_Task_t Tasks_Stack [MAX_TASKS];
 
-void SOS_Init(const OS_Congif_t * ConfigPtr);
+OS_Tasks_Status_t SOS_Init(const OS_Congif_t * ConfigPtr);
 void SOS_Run(void);
 OS_Tasks_Status_t SOS_Create_Task (Func_Ptr_t Task_Name, uint16 Periodicity, uint8 Priority);
-void SOS_Delete_Task (Func_Ptr_t Task_Name);
+OS_Tasks_Status_t SOS_Delete_Task (Func_Ptr_t Task_Name);
 
 
 #endif /* SOS_H_ */
