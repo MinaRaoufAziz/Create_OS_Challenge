@@ -92,7 +92,7 @@ OS_Tasks_Status_t SOS_Init(const OS_Congif_t * ConfigPtr)
 			break;
 		}
 	}
-
+	return retval;
 }
 
 OS_Tasks_Status_t SOS_Create_Task (Func_Ptr_t task_Name, uint16 periodicity, uint8 priority)
@@ -141,8 +141,6 @@ OS_Tasks_Status_t SOS_Delete_Task (Func_Ptr_t Task_Name)
 }
 void SOS_Run(void)
 {
-	Timer_SetPrescaler(TIMER_0);
-	Timer_Start(TIMER_0);
 	uint8 all_task_counter;
 	static uint8 ready_task_counter = 0;
 	uint8 counter;
@@ -184,9 +182,18 @@ void SOS_Run(void)
 		}
 		for (counter = 0; counter < ready_task_counter; counter++)
 		{
-			Ready_Task_Buffer_Arr[counter].Task_Name;
+			*(Ready_Task_Buffer_Arr[counter].Task_Name);
 		}
 		ready_task_counter = 0;
 	}
 
+}
+
+ISR(TIM0_OVF_vect)
+{
+	ISR_counter++;
+	if (!(ISR_counter % 4))
+	{
+		ISR_Flag++;
+	}
 }
