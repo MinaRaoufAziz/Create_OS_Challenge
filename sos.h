@@ -10,7 +10,10 @@
 
 #include "timer.h"
 #include <stdlib.h>
+#include <avr/interrupt.h>
+#include "UART.h"
 #define MAX_TASKS 	5
+#define TOG_BIT(var, bit) var ^= (1<<bit)
 
 typedef enum {OVF_TASKS_BUFFER_OS = -9, NULLPTR_OS, INCORRECT_TIMER, INVALID_PRESCALAR,INVALID_ARG ,DONE = 1}OS_Tasks_Status_t;
 
@@ -19,7 +22,7 @@ typedef struct
 	uint8 Timer_ID;
 	uint8 Systick_Time;
 }OS_Congif_t;
-typedef ((*Func_Ptr_t)(void));
+typedef void (*Func_Ptr_t)(void);
 
 typedef enum {CREATED,READY, WAIT, RUN, DELETE}State_t;
 typedef struct
