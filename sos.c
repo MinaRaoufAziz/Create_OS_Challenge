@@ -20,9 +20,14 @@ OS_Task_t Ready_Task_Buffer_Arr[MAX_TASKS];
 OS_Task_t * Ready_Task_Buffer_Ptr = &Ready_Task_Buffer_Arr;
 OS_Task_t temp_struct;
 
-void SOS_Init(const OS_Congif_t * ConfigPtr)
+OS_Tasks_Status_t SOS_Init(const OS_Congif_t * ConfigPtr)
 {
-	if (NULL != ConfigPtr)
+	uint8 retval;
+	if (NULL == ConfigPtr)
+	{
+		retval = NULLPTR_OS;
+	}
+	else
 	{
 		switch (ConfigPtr ->Timer_ID)
 		{
@@ -36,6 +41,7 @@ void SOS_Init(const OS_Congif_t * ConfigPtr)
 			Timer_Init(TIMER_2);
 			break;
 		default:
+			retval = INCORRECT_TIMER;
 			break;
 		}
 		switch (ConfigPtr -> Systick_Time)
@@ -58,6 +64,7 @@ void SOS_Init(const OS_Congif_t * ConfigPtr)
 			}
 			else
 			{
+				retval = INVALID_PRESCALAR;
 				break;
 			}
 
@@ -77,9 +84,11 @@ void SOS_Init(const OS_Congif_t * ConfigPtr)
 			}
 			else
 			{
+				retval = INVALID_PRESCALAR;
 				break;
 			}
 		default:
+			retval = INVALID_PRESCALAR;
 			break;
 		}
 	}
@@ -97,8 +106,8 @@ OS_Tasks_Status_t SOS_Create_Task (Func_Ptr_t task_Name, uint16 periodicity, uin
 		(All_Task_Buffer_Ptr [start_task_counter]) . Priority = priority;
 		(All_Task_Buffer_Ptr [start_task_counter]) . Deadline = periodicity;
 		(All_Task_Buffer_Ptr [start_task_counter]) . Func_State = CREATED;
-		retval = OK;
 		start_task_counter++;
+		retval = DONE;
 	}
 	else
 	{
@@ -108,9 +117,10 @@ OS_Tasks_Status_t SOS_Create_Task (Func_Ptr_t task_Name, uint16 periodicity, uin
 	return retval;
 }
 
-void SOS_Delete_Task (Func_Ptr_t Task_Name)
+OS_Tasks_Status_t SOS_Delete_Task (Func_Ptr_t Task_Name)
 {
 	uint8 counter;
+	uint8 retval;
 	for (counter = 0; counter < MAX_TASKS; counter++)
 	{
 		if (Task_Name == (All_Task_Buffer_Ptr + counter)->Task_Name)
@@ -120,8 +130,14 @@ void SOS_Delete_Task (Func_Ptr_t Task_Name)
 			(All_Task_Buffer_Ptr + counter)-> Priority = DELETE;
 			(All_Task_Buffer_Ptr + counter)-> Deadline = DELETE;
 			(All_Task_Buffer_Ptr + counter)-> Func_State = DELETE;
+			retval = DONE;
+		}
+		else
+		{
+			retval = INVALID_ARG;
 		}
 	}
+	return retval;
 }
 void SOS_Run(void)
 {
