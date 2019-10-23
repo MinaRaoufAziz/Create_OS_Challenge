@@ -6,15 +6,8 @@
  */
 
 #include "sos.h"
-#include "UART.h"
 #include "registers.h"
-#define TOG_BIT(var, bit) var ^= (1<<bit)
-extern uint8 prescalar;
-extern OS_Task_t All_Task_Buffer_Arr[MAX_TASKS];
-extern OS_Task_t * All_Task_Buffer_Ptr;
-extern OS_Task_t Ready_Task_Buffer_Arr[MAX_TASKS];
-extern OS_Task_t * Ready_Task_Buffer_Ptr;
-extern uint8 start_task_counter;
+
 
 void LED1_ON()
 {
@@ -29,6 +22,8 @@ void LED2_ON()
 }
 
 
+
+
 int main ()
 {
 	OS_Congif_t SOS_Cfg;
@@ -38,18 +33,7 @@ int main ()
 	SOS_Init (Cfg_Ptr);
 	SOS_Create_Task(LED1_ON, 20, 1);
 	SOS_Create_Task(LED2_ON, 13, 2);
-	if ((All_Task_Buffer_Ptr->Priority) == 1)
-	{
-		LED2_ON();
+	Timer_SetPrescaler(Cfg_Ptr->Timer_ID);
+	Timer_Start(Cfg_Ptr->Timer_ID);
 
-	}
-	All_Task_Buffer_Ptr++;
-	if ((All_Task_Buffer_Ptr->Periodicity) == 13)
-	{
-		if ((All_Task_Buffer_Ptr->Priority) == 2)
-		{
-			LED1_ON();
-		}
-
-	}
 }
